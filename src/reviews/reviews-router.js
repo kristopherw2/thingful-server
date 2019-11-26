@@ -18,19 +18,23 @@ reviewsRouter
           error: `Missing '${key}' in request body`
         })
 
-    newComment.uesr_id = req.user.id
-
+    newReview.user_id = req.user.id
+console.log('inside reviews router part 1')
     ReviewsService.insertReview(
       req.app.get('db'),
       newReview
     )
       .then(review => {
+        console.log('inside then block')
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${review.id}`))
           .json(ReviewsService.serializeReview(review))
       })
-      .catch(next)
+      .catch((err) =>{
+        console.log(err);
+       next();
+    })
     })
 
 module.exports = reviewsRouter

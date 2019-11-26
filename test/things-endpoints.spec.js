@@ -31,12 +31,12 @@ describe('Things Endpoints', function() {
   afterEach('cleanup', () => helpers.cleanTables(db))
 
   describe(`Protected endpoints`, () => {
-    beforeEach('insert things', () => 
+    beforeEach('insert things', () =>
       helpers.seedThingsTables(
         db,
         testUsers,
-        testArticles,
-        testComments,
+        testThings,
+        testReviews,
       )
     )
 
@@ -59,6 +59,7 @@ protectedEndpoints.forEach(endpoint => {
       .expect(401, {error: `Missing basic token`})
       })
     it(`responds 401 'Unauthorized request' when no credentials in the token`, () => {
+      const userNoCreds = {}
       return supertest(app)
         .get(endpoint.path)
         .set('Authorization', helpers.makeAuthHeader(userNoCreds))
@@ -144,7 +145,7 @@ protectedEndpoints.forEach(endpoint => {
   describe(`GET /api/things/:thing_id`, () => {
     context(`Given no things`, () => {
       beforeEach(() =>
-        db.into('thingful_users').insert(testUsers)
+        helpers.seedUsers(db, testUsers)
       )
       it(`responds with 404`, () => {
         const thingId = 123456
@@ -212,7 +213,7 @@ protectedEndpoints.forEach(endpoint => {
   describe(`GET /api/things/:thing_id/reviews`, () => {
     context(`Given no things`, () => {
       beforeEach(() => 
-        db.into('thingful_users').insert(testUsers)
+        helpers.seedUsers(db, testUsers)
       )
       it(`responds with 404`, () => {
         const thingId = 123456
@@ -246,4 +247,5 @@ protectedEndpoints.forEach(endpoint => {
       })
     })
   })
+})
 })
